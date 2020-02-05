@@ -68,15 +68,15 @@ static struct special_reg name ## _entry = {			\
 };								\
 DATA_SET(special_reg_set, name ## _entry)
 
-#define SPECIAL_REGISTER_GROUP(n)				\
-SPECIAL_REGISTER(S3_0_C0_C ## n ## _0);				\
-SPECIAL_REGISTER(S3_0_C0_C ## n ## _1);				\
-SPECIAL_REGISTER(S3_0_C0_C ## n ## _2);				\
-SPECIAL_REGISTER(S3_0_C0_C ## n ## _3);				\
-SPECIAL_REGISTER(S3_0_C0_C ## n ## _4);				\
-SPECIAL_REGISTER(S3_0_C0_C ## n ## _5);				\
-SPECIAL_REGISTER(S3_0_C0_C ## n ## _6);				\
-SPECIAL_REGISTER(S3_0_C0_C ## n ## _7)
+#define SPECIAL_REGISTER_GROUP(m)				\
+SPECIAL_REGISTER(S3_0_C0_C ## m ## _0);				\
+SPECIAL_REGISTER(S3_0_C0_C ## m ## _1);				\
+SPECIAL_REGISTER(S3_0_C0_C ## m ## _2);				\
+SPECIAL_REGISTER(S3_0_C0_C ## m ## _3);				\
+SPECIAL_REGISTER(S3_0_C0_C ## m ## _4);				\
+SPECIAL_REGISTER(S3_0_C0_C ## m ## _5);				\
+SPECIAL_REGISTER(S3_0_C0_C ## m ## _6);				\
+SPECIAL_REGISTER(S3_0_C0_C ## m ## _7)
 
 SPECIAL_REGISTER_GROUP(0);
 SPECIAL_REGISTER_GROUP(1);
