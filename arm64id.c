@@ -68,24 +68,24 @@ static struct special_reg name ## _entry = {			\
 };								\
 DATA_SET(special_reg_set, name ## _entry)
 
-#define SPECIAL_REGISTER_GROUP(m)				\
-SPECIAL_REGISTER(S3_0_C0_C ## m ## _0);				\
-SPECIAL_REGISTER(S3_0_C0_C ## m ## _1);				\
-SPECIAL_REGISTER(S3_0_C0_C ## m ## _2);				\
-SPECIAL_REGISTER(S3_0_C0_C ## m ## _3);				\
-SPECIAL_REGISTER(S3_0_C0_C ## m ## _4);				\
-SPECIAL_REGISTER(S3_0_C0_C ## m ## _5);				\
-SPECIAL_REGISTER(S3_0_C0_C ## m ## _6);				\
-SPECIAL_REGISTER(S3_0_C0_C ## m ## _7)
+#define SPECIAL_REGISTER_GROUP(op1, m)				\
+SPECIAL_REGISTER(S3_ ## op1 ## _C0_C ## m ## _0);		\
+SPECIAL_REGISTER(S3_ ## op1 ## _C0_C ## m ## _1);		\
+SPECIAL_REGISTER(S3_ ## op1 ## _C0_C ## m ## _2);		\
+SPECIAL_REGISTER(S3_ ## op1 ## _C0_C ## m ## _3);		\
+SPECIAL_REGISTER(S3_ ## op1 ## _C0_C ## m ## _4);		\
+SPECIAL_REGISTER(S3_ ## op1 ## _C0_C ## m ## _5);		\
+SPECIAL_REGISTER(S3_ ## op1 ## _C0_C ## m ## _6);		\
+SPECIAL_REGISTER(S3_ ## op1 ## _C0_C ## m ## _7)
 
-SPECIAL_REGISTER_GROUP(0);
-SPECIAL_REGISTER_GROUP(1);
-SPECIAL_REGISTER_GROUP(2);
-SPECIAL_REGISTER_GROUP(3);
-SPECIAL_REGISTER_GROUP(4);
-SPECIAL_REGISTER_GROUP(5);
-SPECIAL_REGISTER_GROUP(6);
-SPECIAL_REGISTER_GROUP(7);
+SPECIAL_REGISTER_GROUP(0, 0);
+SPECIAL_REGISTER_GROUP(0, 1);
+SPECIAL_REGISTER_GROUP(0, 2);
+SPECIAL_REGISTER_GROUP(0, 3);
+SPECIAL_REGISTER_GROUP(0, 4);
+SPECIAL_REGISTER_GROUP(0, 5);
+SPECIAL_REGISTER_GROUP(0, 6);
+SPECIAL_REGISTER_GROUP(0, 7);
 
 static struct special_register_alias {
 	const char *name;
