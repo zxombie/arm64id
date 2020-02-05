@@ -87,6 +87,8 @@ SPECIAL_REGISTER_GROUP(0, 5);
 SPECIAL_REGISTER_GROUP(0, 6);
 SPECIAL_REGISTER_GROUP(0, 7);
 
+SPECIAL_REGISTER_GROUP(3, 0);
+
 static struct special_register_alias {
 	const char *name;
 	const char *alias;
@@ -131,6 +133,9 @@ static struct special_register_alias {
 	{ "S3_0_C0_C7_0", "id_aa64mmfr0_el1" },
 	{ "S3_0_C0_C7_1", "id_aa64mmfr1_el1" },
 	{ "S3_0_C0_C7_2", "id_aa64mmfr2_el1" },
+
+	{ "S3_3_C0_C0_1", "ctr_el0" },
+	{ "S3_3_C0_C0_7", "dczid_el0" },
 };
 
 static void
