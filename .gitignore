@@ -1,5 +1,10 @@
+arm64id
+arm64id.debug
+arm64id.full
+
 # Prerequisites
 *.d
+.depend
 
 # Object files
 *.o
