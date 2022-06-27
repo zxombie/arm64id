@@ -87,6 +87,11 @@ SPECIAL_REGISTER_GROUP(0, 0, 5);
 SPECIAL_REGISTER_GROUP(0, 0, 6);
 SPECIAL_REGISTER_GROUP(0, 0, 7);
 
+SPECIAL_REGISTER_GROUP(3, 0, 0);
+SPECIAL_REGISTER_GROUP(3, 14, 0);
+SPECIAL_REGISTER_GROUP(3, 14, 2);
+SPECIAL_REGISTER_GROUP(3, 14, 3);
+
 static struct special_register_alias {
 	const char *name;
 	const char *alias;
@@ -134,6 +139,17 @@ static struct special_register_alias {
 
 	{ "S3_3_C0_C0_1", "ctr_el0" },
 	{ "S3_3_C0_C0_7", "dczid_el0" },
+
+	{ "S3_3_C14_C0_1", "cntpct_el0" },
+	{ "S3_3_C14_C0_2", "cntvct_el0" },
+
+	{ "S3_3_C14_C2_0", "cntp_tval_el0" },
+	{ "S3_3_C14_C2_1", "cntp_ctl_el0" },
+	{ "S3_3_C14_C2_2", "cntp_cval_el0" },
+
+	{ "S3_3_C14_C3_0", "cntv_tval_el0" },
+	{ "S3_3_C14_C3_1", "cntv_ctl_el0" },
+	{ "S3_3_C14_C3_2", "cntv_cval_el0" },
 };
 
 static void
