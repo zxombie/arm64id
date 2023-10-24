@@ -1,0 +1,27 @@
+name: Linux build
+
+on: [push, pull_request]
+
+jobs:
+  build:
+    name: ${{ matrix.os }} (${{ matrix.compiler }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ ubuntu-20.04, ubuntu-22.04 ]
+        include:
+          - os: ubuntu-20.04
+            compiler: aarch64-linux-gnu-gcc
+            pkgs: bmake crossbuild-essential-arm64
+          - os: ubuntu-22.04
+            compiler: aarch64-linux-gnu-gcc
+            pkgs: bmake crossbuild-essential-arm64
+    steps:
+      - uses: actions/checkout@v3
+      - name: install packages (Ubuntu)
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update --quiet || true
+          sudo apt-get -yq --no-install-suggests --no-install-recommends install ${{ matrix.pkgs }}
+      - name: make
+        run: bmake CC=${{ matrix.compiler }}
