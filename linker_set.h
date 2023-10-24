@@ -67,7 +67,16 @@
  * The userspace address sanitizer inserts redzones around global variables,
  * violating the assumption that linker set elements are packed.
  */
+#if defined(__SANITIZE_ADDRESS__)
 #define	LS_NOASAN	__attribute__((no_sanitize("address")))
+#elif defined(__has_feature)
+# if __has_feature(address_sanitizer)
+#define	LS_NOASAN	__attribute__((no_sanitize("address")))
+# endif
+#endif
+#if !defined(LS_NOASAN)
+#define	LS_NOASAN
+#endif
 
 #define LS_MAKE_SET_QV(set, sym, qv)				\
 	LS_WEAK(LS_CONCAT(__start_ls_set_,set));			\
