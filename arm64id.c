@@ -32,7 +32,6 @@
 
 #include <sys/cdefs.h>
 #include <sys/param.h>
-#include <sys/linker_set.h>
 #include <sys/ucontext.h>
 
 #include <err.h>
@@ -42,6 +41,8 @@
 #include <stdio.h>
 #include <unistd.h>
 
+#include "linker_set.h"
+
 typedef uint64_t (*special_reg_read)(uint64_t *);
 
 struct special_reg {
@@ -49,7 +50,7 @@ struct special_reg {
 	special_reg_read reader;
 };
 
-SET_DECLARE(special_reg_set, struct special_reg);
+LS_SET_DECLARE(special_reg_set, struct special_reg);
 
 #define SPECIAL_REGISTER(name)					\
 uint64_t get_##name(uint64_t *);				\
@@ -63,10 +64,10 @@ asm(								\
 "	ret				\n"			\
 );								\
 static struct special_reg name ## _entry = {			\
-	.reg_name = __XSTRING(name),				\
+	.reg_name = LS_XSTRING(name),				\
 	.reader = get_ ## name,					\
 };								\
-DATA_SET(special_reg_set, name ## _entry)
+LS_DATA_SET(special_reg_set, name ## _entry)
 
 #define SPECIAL_REGISTER_GROUP(op1, n, m)				\
 SPECIAL_REGISTER(S3_ ## op1 ## _C ## n ## _C ## m ## _0);		\
@@ -161,10 +162,20 @@ sigill(int signo, siginfo_t *info, void *ctx)
 
 	uap = ctx;
 
+#if defined(__FreeBSD__)
 	uap->uc_mcontext.mc_gpregs.gp_elr += 4;
 	uap->uc_mcontext.mc_gpregs.gp_x[0] = 1;
+#elif defined(__linux__)
+	uap->uc_mcontext.pc += 4;
+	uap->uc_mcontext.regs[0] = 1;
+#else
+#error Unknown OS
+#endif
 }
 
+#ifndef nitems
+#define	nitems(x)	(sizeof(x)/sizeof(x[0]))
+#endif
 
 int
 main(int argc, char *argv[])
@@ -181,7 +192,7 @@ main(int argc, char *argv[])
 	if (sigaction(SIGILL, &act, NULL) != 0)
 		err(1, "sigaction failed");
 
-	SET_FOREACH(sr, special_reg_set) {
+	LS_SET_FOREACH(sr, special_reg_set) {
 		const char *name;
 		int i;
 
