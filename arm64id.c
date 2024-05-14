@@ -123,7 +123,7 @@ static struct special_register_alias {
 	{ "S3_0_C0_C3_2", "mvfr2_el1" },
 
 	{ "S3_0_C0_C4_0", "id_aa64pfr0_el1" },
-	{ "S3_0_C0_C4_1", "id_aa64pfr0_el1" },
+	{ "S3_0_C0_C4_1", "id_aa64pfr1_el1" },
 	{ "S3_0_C0_C4_4", "id_aa64zfr0_el1" },
 	{ "S3_0_C0_C4_5", "id_aa64smfr0_el1" },
 
