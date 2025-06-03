@@ -32,11 +32,13 @@
 
 #include <sys/cdefs.h>
 #include <sys/param.h>
+#include <sys/auxv.h>
 #include <sys/ucontext.h>
 
 #include <err.h>
 #include <signal.h>
 #include <string.h>
+#include <stdbool.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <unistd.h>
@@ -178,6 +180,164 @@ sigill(int signo, siginfo_t *info, void *ctx)
 #define	nitems(x)	(sizeof(x)/sizeof(x[0]))
 #endif
 
+struct hwcaps {
+	const char *name;
+	unsigned long cap;
+};
+
+static struct hwcaps hwcaps[] = {
+#define	HWCAP(cap) { LS_XSTRING(cap), HWCAP_ ## cap }
+	HWCAP(FP),
+	HWCAP(ASIMD),
+	HWCAP(EVTSTRM),
+	HWCAP(AES),
+	HWCAP(PMULL),
+	HWCAP(SHA1),
+	HWCAP(SHA2),
+	HWCAP(CRC32),
+	HWCAP(ATOMICS),
+	HWCAP(FPHP),
+	HWCAP(ASIMDHP),
+	HWCAP(CPUID),
+	HWCAP(ASIMDRDM),
+	HWCAP(JSCVT),
+	HWCAP(FCMA),
+	HWCAP(LRCPC),
+	HWCAP(DCPOP),
+	HWCAP(SHA3),
+	HWCAP(SM3),
+	HWCAP(SM4),
+	HWCAP(ASIMDDP),
+	HWCAP(SHA512),
+	HWCAP(SVE),
+	HWCAP(ASIMDFHM),
+	HWCAP(DIT),
+	HWCAP(USCAT),
+	HWCAP(ILRCPC),
+	HWCAP(FLAGM),
+	HWCAP(SSBS),
+	HWCAP(SB),
+	HWCAP(PACA),
+	HWCAP(PACG),
+	HWCAP(GCS),
+#undef HWCAP
+};
+
+static struct hwcaps hwcaps2[] = {
+#define	HWCAP(cap) { LS_XSTRING(cap), HWCAP2_ ## cap }
+	HWCAP(DCPODP),
+	HWCAP(SVE2),
+	HWCAP(SVEAES),
+	HWCAP(SVEPMULL),
+	HWCAP(SVEBITPERM),
+	HWCAP(SVESHA3),
+	HWCAP(SVESM4),
+	HWCAP(FLAGM2),
+	HWCAP(FRINT),
+	HWCAP(SVEI8MM),
+	HWCAP(SVEF32MM),
+	HWCAP(SVEF64MM),
+	HWCAP(SVEBF16),
+	HWCAP(I8MM),
+	HWCAP(BF16),
+	HWCAP(DGH),
+	HWCAP(RNG),
+	HWCAP(BTI),
+	HWCAP(MTE),
+	HWCAP(ECV),
+	HWCAP(AFP),
+	HWCAP(RPRES),
+	HWCAP(MTE3),
+	HWCAP(SME),
+	HWCAP(SME_I16I64),
+	HWCAP(SME_F64F64),
+	HWCAP(SME_I8I32),
+	HWCAP(SME_F16F32),
+	HWCAP(SME_B16F32),
+	HWCAP(SME_F32F32),
+	HWCAP(SME_FA64),
+	HWCAP(WFXT),
+	HWCAP(EBF16),
+	HWCAP(SVE_EBF16),
+	HWCAP(CSSC),
+	HWCAP(RPRFM),
+	HWCAP(SVE2P1),
+	HWCAP(SME2),
+	HWCAP(SME2P1),
+	HWCAP(SME_I16I32),
+	HWCAP(SME_BI32I32),
+	HWCAP(SME_B16B16),
+	HWCAP(SME_F16F16),
+	HWCAP(MOPS),
+	HWCAP(HBC),
+	HWCAP(SVE_B16B16),
+	HWCAP(LRCPC3),
+	HWCAP(LSE128),
+	HWCAP(FPMR),
+	HWCAP(LUT),
+	HWCAP(FAMINMAX),
+	HWCAP(F8CVT),
+	HWCAP(F8FMA),
+	HWCAP(F8DP4),
+	HWCAP(F8DP2),
+	HWCAP(F8E4M3),
+	HWCAP(F8E5M2),
+	HWCAP(SME_LUTV2),
+	HWCAP(SME_F8F16),
+	HWCAP(SME_F8F32),
+	HWCAP(SME_SF8FMA),
+	HWCAP(SME_SF8DP4),
+	HWCAP(SME_SF8DP2),
+	HWCAP(POE),
+#undef HWCAP
+};
+
+static bool
+get_caps(int cap, unsigned long *caps)
+{
+#if defined(__FreeBSD__)
+	return (elf_aux_info(cap, caps, sizeof(*caps)) == 0);
+#elif defined(__linux__)
+	*caps = getauxval(cap);
+	return (true);
+#else
+#error Unknown OS
+#endif
+}
+
+static void
+print_hwcaps(void)
+{
+	unsigned long caps;
+
+	if (!get_caps(AT_HWCAP, &caps))
+		goto hwcap2;
+
+	printf(" HWCAP: %016lx\n", caps);
+	for (int i = 0; i < nitems(hwcaps); i++) {
+		if ((caps & hwcaps[i].cap) != 0) {
+			printf("  %s\n", hwcaps[i].name);
+			caps &= ~hwcaps[i].cap;
+		}
+	}
+	if (caps != 0)
+		printf("Unknown caps: %lx\n", caps);
+
+hwcap2:
+	if (!get_caps(AT_HWCAP2, &caps))
+		return;
+
+	printf("HWCAP2: %016lx\n", caps);
+	for (int i = 0; i < nitems(hwcaps); i++) {
+		if ((caps & hwcaps2[i].cap) != 0) {
+			printf("  %s\n", hwcaps2[i].name);
+			caps &= ~hwcaps2[i].cap;
+		}
+	}
+	if (caps != 0)
+		printf("Unknown caps: %lx\n", caps);
+}
+
 int
 main(int argc, char *argv[])
 {
@@ -213,6 +373,8 @@ main(int argc, char *argv[])
 		else
 			printf("0x%016lx\n", reg);
 	}
+
+	print_hwcaps();
 
 	return (0);
 }
