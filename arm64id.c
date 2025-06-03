@@ -55,6 +55,7 @@ LS_SET_DECLARE(special_reg_set, struct special_reg);
 #define SPECIAL_REGISTER(name)					\
 uint64_t get_##name(uint64_t *);				\
 asm(								\
+".text					\n"			\
 ".globl get_"__STRING(name)"		\n"			\
 "get_"__STRING(name)":			\n"			\
 "	mov	x1, x0			\n"			\
