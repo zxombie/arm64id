@@ -1,0 +1,25 @@
+name: FreeBSD build
+
+on: [push, pull_request]
+
+jobs:
+  build:
+    name: FreeBSD ${{ matrix.release }}
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        release: [ "13.5", "14.2", "15.0" ]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Start VM
+        id: vm-aarch64
+        uses: vmactions/freebsd-vm@v1
+        with:
+          release: ${{ matrix.release }}
+          arch: aarch64
+      - name: make
+        shell: freebsd {0}
+        run: cd $GITHUB_WORKSPACE ; make
+      - name: run
+        shell: freebsd {0}
+        run: $GITHUB_WORKSPACE/arm64id
