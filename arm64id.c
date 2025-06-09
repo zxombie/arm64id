@@ -43,6 +43,7 @@
 #include <stdio.h>
 #include <unistd.h>
 
+#include "hwcaps.h"
 #include "linker_set.h"
 
 typedef uint64_t (*special_reg_read)(uint64_t *);
