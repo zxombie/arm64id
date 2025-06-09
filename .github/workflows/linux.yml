@@ -10,10 +10,10 @@ jobs:
       matrix:
         os: [ ubuntu-20.04, ubuntu-22.04 ]
         include:
-          - os: ubuntu-20.04
+          - os: ubuntu-22.04
             compiler: aarch64-linux-gnu-gcc
             pkgs: bmake crossbuild-essential-arm64
-          - os: ubuntu-22.04
+          - os: ubuntu-24.04
             compiler: aarch64-linux-gnu-gcc
             pkgs: bmake crossbuild-essential-arm64
     steps:
