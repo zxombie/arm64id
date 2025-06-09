@@ -120,10 +120,14 @@ static struct special_register_alias {
 	{ "S3_0_C0_C2_4", "id_isar4_el1" },
 	{ "S3_0_C0_C2_5", "id_isar5_el1" },
 	{ "S3_0_C0_C2_6", "id_mmfr4_el1" },
+	{ "S3_0_C0_C2_7", "id_isar6_el1" },
 
 	{ "S3_0_C0_C3_0", "mvfr0_el1" },
 	{ "S3_0_C0_C3_1", "mvfr1_el1" },
 	{ "S3_0_C0_C3_2", "mvfr2_el1" },
+	{ "S3_0_C0_C3_4", "id_pfr2_el1" },
+	{ "S3_0_C0_C3_5", "id_dfr1_el1" },
+	{ "S3_0_C0_C3_6", "id_mmfr5_el1" },
 
 	{ "S3_0_C0_C4_0", "id_aa64pfr0_el1" },
 	{ "S3_0_C0_C4_1", "id_aa64pfr1_el1" },
@@ -132,22 +136,29 @@ static struct special_register_alias {
 
 	{ "S3_0_C0_C5_0", "id_aa64dfr0_el1" },
 	{ "S3_0_C0_C5_1", "id_aa64dfr1_el1" },
+	{ "S3_0_C0_C5_2", "id_aa64dfr2_el1" },
 	{ "S3_0_C0_C5_4", "id_aa64afr0_el1" },
 	{ "S3_0_C0_C5_5", "id_aa64afr1_el1" },
 
 	{ "S3_0_C0_C6_0", "id_aa64isar0_el1" },
 	{ "S3_0_C0_C6_1", "id_aa64isar1_el1" },
 	{ "S3_0_C0_C6_2", "id_aa64isar2_el1" },
+	{ "S3_0_C0_C6_3", "id_aa64isar3_el1" },
 
 	{ "S3_0_C0_C7_0", "id_aa64mmfr0_el1" },
 	{ "S3_0_C0_C7_1", "id_aa64mmfr1_el1" },
 	{ "S3_0_C0_C7_2", "id_aa64mmfr2_el1" },
+	{ "S3_0_C0_C7_3", "id_aa64mmfr3_el1" },
+	{ "S3_0_C0_C7_4", "id_aa64mmfr4_el1" },
 
 	{ "S3_3_C0_C0_1", "ctr_el0" },
 	{ "S3_3_C0_C0_7", "dczid_el0" },
 
+	{ "S3_3_C14_C0_0", "cntfrq_el0" },
 	{ "S3_3_C14_C0_1", "cntpct_el0" },
 	{ "S3_3_C14_C0_2", "cntvct_el0" },
+	{ "S3_3_C14_C0_5", "cntpctss_el0" },
+	{ "S3_3_C14_C0_6", "cntvctss_el0" },
 
 	{ "S3_3_C14_C2_0", "cntp_tval_el0" },
 	{ "S3_3_C14_C2_1", "cntp_ctl_el0" },
