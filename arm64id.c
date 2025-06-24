@@ -333,36 +333,29 @@ get_caps(int cap, unsigned long *caps)
 }
 
 static void
-print_hwcaps(void)
+print_hwcap(int cap, const char *name, struct hwcaps *cap_list, int ncaps)
 {
 	unsigned long caps;
 
-	if (!get_caps(AT_HWCAP, &caps))
-		goto hwcap2;
-
-	printf(" HWCAP: %016lx\n", caps);
-	for (int i = 0; i < nitems(hwcaps); i++) {
-		if ((caps & hwcaps[i].cap) != 0) {
-			printf("  %s\n", hwcaps[i].name);
-			caps &= ~hwcaps[i].cap;
-		}
-	}
-	if (caps != 0)
-		printf("Unknown caps: %lx\n", caps);
-
-hwcap2:
-	if (!get_caps(AT_HWCAP2, &caps))
+	if (!get_caps(cap, &caps))
 		return;
 
-	printf("HWCAP2: %016lx\n", caps);
-	for (int i = 0; i < nitems(hwcaps); i++) {
-		if ((caps & hwcaps2[i].cap) != 0) {
-			printf("  %s\n", hwcaps2[i].name);
-			caps &= ~hwcaps2[i].cap;
+	printf("%s: %016lx\n", name, caps);
+	for (int i = 0; i < ncaps; i++) {
+		if ((caps & cap_list[i].cap) != 0) {
+			printf("  %s\n", cap_list[i].name);
+			caps &= ~cap_list[i].cap;
 		}
 	}
 	if (caps != 0)
 		printf("Unknown caps: %lx\n", caps);
+}
+
+static void
+print_hwcaps(void)
+{
+	print_hwcap(AT_HWCAP,  " HWCAP", hwcaps,  nitems(hwcaps));
+	print_hwcap(AT_HWCAP2, "HWCAP2", hwcaps2, nitems(hwcaps2));
 }
 
 int
