@@ -46,6 +46,21 @@
 #include "hwcaps.h"
 #include "linker_set.h"
 
+#if defined(__FreeBSD__)
+#define	AT_HWCAP3_VAL	38
+#define	AT_HWCAP4_VAL	39
+#elif defined(__linux__)
+#define	AT_HWCAP3_VAL	29
+#define	AT_HWCAP4_VAL	30
+#endif
+
+#ifndef AT_HWCAP3
+#define	AT_HWCAP3	AT_HWCAP3_VAL
+#endif
+#ifndef AT_HWCAP4
+#define	AT_HWCAP4	AT_HWCAP4_VAL
+#endif
+
 typedef uint64_t (*special_reg_read)(uint64_t *);
 
 struct special_reg {
@@ -304,6 +319,12 @@ static struct hwcaps hwcaps2[] = {
 #undef HWCAP
 };
 
+static struct hwcaps hwcaps3[] = {
+};
+
+static struct hwcaps hwcaps4[] = {
+};
+
 static bool
 get_caps(int cap, unsigned long *caps)
 {
@@ -341,6 +362,8 @@ print_hwcaps(void)
 {
 	print_hwcap(AT_HWCAP,  " HWCAP", hwcaps,  nitems(hwcaps));
 	print_hwcap(AT_HWCAP2, "HWCAP2", hwcaps2, nitems(hwcaps2));
+	print_hwcap(AT_HWCAP3, "HWCAP3", hwcaps3, nitems(hwcaps3));
+	print_hwcap(AT_HWCAP4, "HWCAP4", hwcaps4, nitems(hwcaps4));
 }
 
 int
