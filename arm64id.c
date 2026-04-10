@@ -51,7 +51,7 @@
 #include "hwcaps.h"
 #include "linker_set.h"
 
-typedef uint64_t (*special_reg_read)(uint64_t *);
+typedef int (*special_reg_read)(uint64_t *);
 
 struct special_reg {
 	const char *reg_name;
@@ -61,17 +61,18 @@ struct special_reg {
 LS_SET_DECLARE(special_reg_set, struct special_reg);
 
 #define SPECIAL_REGISTER(name)					\
-uint64_t get_##name(uint64_t *);				\
-asm(								\
-".text					\n"			\
-".globl get_"__STRING(name)"		\n"			\
-"get_"__STRING(name)":			\n"			\
-"	mov	x1, x0			\n"			\
-"	mov	x0, #0			\n"			\
-"	mrs	x2, "__STRING(name)"	\n"			\
-"	str	x2, [x1]		\n"			\
-"	ret				\n"			\
-);								\
+static int							\
+get_##name(uint64_t *res)					\
+{								\
+	int ret;						\
+	asm(							\
+	"	mov	w1, #0			\n"		\
+	"	mrs	x2, "__STRING(name)"	\n"		\
+	"	str	x2, [%1]		\n"		\
+	"	mov	%w0, w1			\n"		\
+	: "=r"(ret) : "r"(res): "memory", "x1", "x2");		\
+	return (ret);						\
+}								\
 static struct special_reg name ## _entry = {			\
 	.reg_name = LS_XSTRING(name),				\
 	.reader = get_ ## name,					\
@@ -184,16 +185,16 @@ sigill(int signo, siginfo_t *info, void *ctx)
 
 #if defined(__FreeBSD__)
 	uap->uc_mcontext.mc_gpregs.gp_elr += 4;
-	uap->uc_mcontext.mc_gpregs.gp_x[0] = 1;
+	uap->uc_mcontext.mc_gpregs.gp_x[1] = 1;
 #elif defined(__linux__)
 	uap->uc_mcontext.pc += 4;
-	uap->uc_mcontext.regs[0] = 1;
+	uap->uc_mcontext.regs[1] = 1;
 #elif defined(__NetBSD__)
 	uap->uc_mcontext.__gregs[_REG_PC] += 4;
-	uap->uc_mcontext.__gregs[0] = 1;
+	uap->uc_mcontext.__gregs[1] = 1;
 #elif defined(__OpenBSD__)
 	uap->sc_elr += 4;
-	uap->sc_x[0] = 1;
+	uap->sc_x[1] = 1;
 #else
 #error Unknown OS
 #endif
