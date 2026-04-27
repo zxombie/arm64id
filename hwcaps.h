@@ -143,4 +143,10 @@
 #define	HWCAP2_SME_SF8DP2	(1UL << 62)
 #define	HWCAP2_POE		(1UL << 63)
 
+/* HWCAP3 */
+#define	HWCAP3_MTE_FAR		(1 << 0)
+#define	HWCAP3_MTE_STORE_ONLY	(1 << 1)
+#define	HWCAP3_LSFE		(1 << 2)
+#define	HWCAP3_LS64		(1 << 3)
+
 #endif /* !_HWCAPS_H_ */

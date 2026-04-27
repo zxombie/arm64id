@@ -319,6 +319,22 @@ static struct hwcaps hwcaps2[] = {
 #undef HWCAP
 };
 
+#ifdef AT_HWCAP3
+static struct hwcaps hwcaps3[] = {
+#define	HWCAP(cap) { LS_XSTRING(cap), HWCAP3_ ## cap }
+	HWCAP(MTE_FAR),
+	HWCAP(MTE_STORE_ONLY),
+	HWCAP(LSFE),
+	HWCAP(LS64),
+#undef HWCAP
+};
+#endif
+
+#ifdef AT_HWCAP4
+static struct hwcaps hwcaps4[] = {
+};
+#endif
+
 static bool
 get_caps(int cap, unsigned long *caps)
 {
@@ -356,6 +372,12 @@ print_hwcaps(void)
 {
 	print_hwcap(AT_HWCAP,  " HWCAP", hwcaps,  nitems(hwcaps));
 	print_hwcap(AT_HWCAP2, "HWCAP2", hwcaps2, nitems(hwcaps2));
+#ifdef AT_HWCAP3
+	print_hwcap(AT_HWCAP3, "HWCAP3", hwcaps3, nitems(hwcaps));
+#endif
+#ifdef AT_HWCAP4
+	print_hwcap(AT_HWCAP4, "HWCAP4", hwcaps4, nitems(hwcaps));
+#endif
 }
 
 int
