@@ -1,0 +1,25 @@
+name: NetBSD build
+
+on: [push, pull_request]
+
+jobs:
+  build:
+    name: NetBSD ${{ matrix.release }}
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        release: [ "10.1" ]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Start VM
+        id: vm-aarch64
+        uses: vmactions/netbsd-vm@v1
+        with:
+          release: ${{ matrix.release }}
+          arch: aarch64
+      - name: make
+        shell: netbsd {0}
+        run: cd $GITHUB_WORKSPACE ; make
+      - name: run
+        shell: netbsd {0}
+        run: $GITHUB_WORKSPACE/arm64id
