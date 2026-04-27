@@ -56,7 +56,7 @@ struct special_reg {
 	special_reg_read reader;
 };
 
-LS_SET_DECLARE(special_reg_set, struct special_reg);
+LS_SET_DECLARE(special_reg, struct special_reg);
 
 static sigjmp_buf jmpbuf;
 
@@ -80,7 +80,7 @@ static struct special_reg name ## _entry = {			\
 	.reg_name = LS_XSTRING(name),				\
 	.reader = get_ ## name,					\
 };								\
-LS_DATA_SET(special_reg_set, name ## _entry)
+LS_DATA_SET(special_reg, name ## _entry)
 
 #define SPECIAL_REGISTER_GROUP(op1, n, m)				\
 SPECIAL_REGISTER(S3_ ## op1 ## _C ## n ## _C ## m ## _0);		\
@@ -399,7 +399,7 @@ main(int argc, char *argv[])
 	if (sigaction(SIGILL, &act, NULL) != 0)
 		err(1, "sigaction failed");
 
-	LS_SET_FOREACH(sr, special_reg_set) {
+	LS_SET_FOREACH(sr, special_reg) {
 		const char *name;
 		int i;
 
