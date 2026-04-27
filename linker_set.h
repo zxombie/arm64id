@@ -4,6 +4,7 @@
  * Copyright (c) 1999 John D. Polstra
  * Copyright (c) 1999,2001 Peter Wemm <peter@FreeBSD.org>
  * All rights reserved.
+ * Copyright (c) 2023 Jessica Clarke <jrtc27@FreeBSD.org>
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -30,15 +31,25 @@
 #ifndef LINKER_SET_H
 #define LINKER_SET_H
 
+#if defined(__APPLE__)
+#include <mach-o/dyld.h>
+#include <mach-o/getsect.h>
+#endif
+
 #define	LS_STRING(x)		#x
 #define	LS_XSTRING(x)		LS_STRING(x)
 #define	LS_CONCAT1(a, b)	a ## b
 #define	LS_CONCAT(a, b)		LS_CONCAT1(a, b)
 
-#define	LS_SECTION(x)		__attribute__((__section__(x)))
 #define	LS_USED			__attribute__((__used__))
+
+#if defined(__APPLE__)
+#define	LS_SECTION(x)		__attribute__((__section__("__DATA,set_" #x)))
+#else
+#define	LS_SECTION(x)		__attribute__((__section__(x)))
 #define LS_WEAK(sym)		asm(".weak " LS_XSTRING(sym))
 #define	LS_WEAK_SYMBOL		__attribute__((__weak__))
+#endif
 
 /*
  * The following macros are used to declare global sets of objects, which
@@ -78,6 +89,51 @@
 #define	LS_NOASAN
 #endif
 
+#if defined(__APPLE__)
+#define LS_MAKE_SET_QV(set, sym, qv)				\
+	static void const * qv					\
+	LS_NOASAN						\
+	__set_##set##_sym_##sym	LS_SECTION(set)			\
+	LS_USED = &(sym)
+
+static inline __pure2 uint8_t *
+__set_getsectiondata(const char *segname, const char *sectname,
+    unsigned long *size)
+{
+	uint32_t image_count, image_index;
+	const struct mach_header *mh;
+	uint8_t *ret;
+
+	image_count = _dyld_image_count();
+	for (image_index = 0; image_index < image_count; ++image_index) {
+		mh = _dyld_get_image_header(image_index);
+		if (mh == NULL)
+			continue;
+
+		ret = getsectiondata((const struct mach_header_64 *)mh,
+		    segname, sectname, size);
+		if (ret != NULL)
+			return (ret);
+	}
+
+	return (NULL);
+}
+
+#define LS_SET_RANGE(set)	({					\
+	unsigned long __set_size;					\
+	char *__set_data;						\
+	__set_data = __set_getsectiondata("__DATA",			\
+	    "set_" #set, &__set_size);					\
+	(struct {							\
+		LS_CONCAT(__typeof_set_,set)	**begin;		\
+		LS_CONCAT(__typeof_set_,set)	**limit;		\
+	}){								\
+		.begin = (LS_CONCAT(__typeof_set_,set) **)__set_data,	\
+		.limit = (LS_CONCAT(__typeof_set_,set) **)(__set_data +	\
+		    __set_size)						\
+	};								\
+})
+#else
 #define LS_MAKE_SET_QV(set, sym, qv)				\
 	LS_WEAK(LS_CONCAT(__start_ls_set_,set));			\
 	LS_WEAK(LS_CONCAT(__stop_ls_set_,set));			\
@@ -85,6 +141,7 @@
 	LS_NOASAN						\
 	ls_set_##set##_sym_##sym LS_SECTION("ls_set_" #set)	\
 	LS_USED = &(sym)
+#endif
 #define LS_MAKE_SET(set, sym)	LS_MAKE_SET_QV(set, sym, LS_MAKE_SET_CONST)
 
 /*
@@ -100,6 +157,15 @@
 /*
  * Initialize before referring to a given linker set.
  */
+#if defined(__APPLE__)
+#define LS_SET_DECLARE(set, ptype)					\
+	typedef ptype LS_CONCAT(__typeof_set_,set)
+
+#define LS_SET_BEGIN(set)						\
+	(LS_SET_RANGE(set).begin)
+#define LS_SET_LIMIT(set)						\
+	(LS_SET_RANGE(set).limit)
+#else
 #define LS_SET_DECLARE(set, ptype)					\
 	extern ptype LS_WEAK_SYMBOL *LS_CONCAT(__start_ls_set_,set);	\
 	extern ptype LS_WEAK_SYMBOL *LS_CONCAT(__stop_ls_set_,set)
@@ -108,6 +174,7 @@
 	(&LS_CONCAT(__start_ls_set_,set))
 #define LS_SET_LIMIT(set)						\
 	(&LS_CONCAT(__stop_ls_set_,set))
+#endif
 
 /*
  * Iterate over all the elements of a set.
