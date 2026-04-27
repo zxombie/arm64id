@@ -32,7 +32,9 @@
 
 #include <sys/cdefs.h>
 #include <sys/param.h>
+#if !defined(__NetBSD__)
 #include <sys/auxv.h>
+#endif
 #include <sys/ucontext.h>
 
 #include <err.h>
@@ -184,6 +186,9 @@ sigill(int signo, siginfo_t *info, void *ctx)
 #elif defined(__linux__)
 	uap->uc_mcontext.pc += 4;
 	uap->uc_mcontext.regs[0] = 1;
+#elif defined(__NetBSD__)
+	uap->uc_mcontext.__gregs[_REG_PC] += 4;
+	uap->uc_mcontext.__gregs[0] = 1;
 #else
 #error Unknown OS
 #endif
@@ -192,6 +197,9 @@ sigill(int signo, siginfo_t *info, void *ctx)
 #ifndef nitems
 #define	nitems(x)	(sizeof(x)/sizeof(x[0]))
 #endif
+
+/* No HWCAP support on NetBSD (at least not in 2026) */
+#if !defined(__NetBSD__)
 
 struct hwcaps {
 	const char *name;
@@ -380,6 +388,7 @@ print_hwcaps(void)
 	print_hwcap(AT_HWCAP4, "HWCAP4", hwcaps4, nitems(hwcaps));
 #endif
 }
+#endif /* !__NetBSD__ */
 
 int
 main(int argc, char *argv[])
@@ -417,7 +426,9 @@ main(int argc, char *argv[])
 			printf("0x%"PRIx64"\n", reg);
 	}
 
+#if !defined(__NetBSD__)
 	print_hwcaps();
+#endif
 
 	return (0);
 }
