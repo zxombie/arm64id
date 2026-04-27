@@ -35,7 +35,9 @@
 #if !defined(__NetBSD__)
 #include <sys/auxv.h>
 #endif
+#if !defined(__OpenBSD__)
 #include <sys/ucontext.h>
+#endif
 
 #include <err.h>
 #include <inttypes.h>
@@ -189,6 +191,9 @@ sigill(int signo, siginfo_t *info, void *ctx)
 #elif defined(__NetBSD__)
 	uap->uc_mcontext.__gregs[_REG_PC] += 4;
 	uap->uc_mcontext.__gregs[0] = 1;
+#elif defined(__OpenBSD__)
+	uap->sc_elr += 4;
+	uap->sc_x[0] = 1;
 #else
 #error Unknown OS
 #endif
@@ -347,7 +352,7 @@ static struct hwcaps hwcaps4[] = {
 static bool
 get_caps(int cap, unsigned long *caps)
 {
-#if defined(__FreeBSD__)
+#if defined(__FreeBSD__) || defined(__OpenBSD__)
 	return (elf_aux_info(cap, caps, sizeof(*caps)) == 0);
 #elif defined(__linux__)
 	*caps = getauxval(cap);
