@@ -8,7 +8,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        release: [ "13.5", "14.2", "15.0" ]
+        release: [ "14.4", "15.0" ]
     steps:
       - uses: actions/checkout@v4
       - name: Start VM
