@@ -36,6 +36,7 @@
 #include <sys/ucontext.h>
 
 #include <err.h>
+#include <inttypes.h>
 #include <signal.h>
 #include <string.h>
 #include <stdbool.h>
@@ -413,7 +414,7 @@ main(int argc, char *argv[])
 		if (cursr->reader(&reg))
 			printf("<invalid>\n");
 		else
-			printf("0x%016lx\n", reg);
+			printf("0x%"PRIx64"\n", reg);
 	}
 
 	print_hwcaps();
