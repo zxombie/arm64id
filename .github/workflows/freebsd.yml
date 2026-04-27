@@ -10,7 +10,7 @@ jobs:
       matrix:
         release: [ "14.4", "15.0" ]
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - name: Start VM
         id: vm-aarch64
         uses: vmactions/freebsd-vm@v1

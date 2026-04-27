@@ -10,7 +10,7 @@ jobs:
       matrix:
         release: [ "10.1" ]
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - name: Start VM
         id: vm-aarch64
         uses: vmactions/netbsd-vm@v1
