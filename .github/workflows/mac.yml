@@ -1,0 +1,18 @@
+name: Mac build
+
+on: [push, pull_request]
+
+jobs:
+  build:
+    name: Mac ${{ matrix.release }}
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v6
+      - name: install packages
+        run: |
+          brew update --quiet || true
+          brew install bmake || true
+      - name: make
+        run: bmake
+      - name: run
+        run: ./arm64id
