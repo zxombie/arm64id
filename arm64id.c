@@ -35,12 +35,10 @@
 #if !defined(__NetBSD__)
 #include <sys/auxv.h>
 #endif
-#if !defined(__OpenBSD__)
-#include <sys/ucontext.h>
-#endif
 
 #include <err.h>
 #include <inttypes.h>
+#include <setjmp.h>
 #include <signal.h>
 #include <string.h>
 #include <stdbool.h>
@@ -60,17 +58,22 @@ struct special_reg {
 
 LS_SET_DECLARE(special_reg_set, struct special_reg);
 
+static sigjmp_buf jmpbuf;
+
 #define SPECIAL_REGISTER(name)					\
 static int							\
 get_##name(uint64_t *res)					\
 {								\
+	uint64_t tmp;						\
 	int ret;						\
-	asm(							\
-	"	mov	w1, #0			\n"		\
-	"	mrs	x2, "__STRING(name)"	\n"		\
-	"	str	x2, [%1]		\n"		\
-	"	mov	%w0, w1			\n"		\
-	: "=r"(ret) : "r"(res): "memory", "x1", "x2");		\
+								\
+	ret = sigsetjmp(jmpbuf, 1);				\
+	if (ret == 0) {						\
+		asm(						\
+		"	mrs	%0, "__STRING(name)"	\n"	\
+		"	str	%0, [%1]		\n"	\
+		: "+r"(tmp): "r"(res): "memory");		\
+	}							\
 	return (ret);						\
 }								\
 static struct special_reg name ## _entry = {			\
@@ -179,25 +182,10 @@ static struct special_register_alias {
 static void
 sigill(int signo, siginfo_t *info, void *ctx)
 {
-	ucontext_t *uap;
+	(void)info;
+	(void)ctx;
 
-	uap = ctx;
-
-#if defined(__FreeBSD__)
-	uap->uc_mcontext.mc_gpregs.gp_elr += 4;
-	uap->uc_mcontext.mc_gpregs.gp_x[1] = 1;
-#elif defined(__linux__)
-	uap->uc_mcontext.pc += 4;
-	uap->uc_mcontext.regs[1] = 1;
-#elif defined(__NetBSD__)
-	uap->uc_mcontext.__gregs[_REG_PC] += 4;
-	uap->uc_mcontext.__gregs[1] = 1;
-#elif defined(__OpenBSD__)
-	uap->sc_elr += 4;
-	uap->sc_x[1] = 1;
-#else
-#error Unknown OS
-#endif
+	siglongjmp(jmpbuf, 1);
 }
 
 #ifndef nitems
