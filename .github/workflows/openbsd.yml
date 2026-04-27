@@ -1,0 +1,25 @@
+name: OpenBSD build
+
+on: [push, pull_request]
+
+jobs:
+  build:
+    name: OpenBSD ${{ matrix.release }}
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        release: [ "7.7", "7.8" ]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Start VM
+        id: vm-aarch64
+        uses: vmactions/openbsd-vm@v1
+        with:
+          release: ${{ matrix.release }}
+          arch: aarch64
+      - name: make
+        shell: openbsd {0}
+        run: cd $GITHUB_WORKSPACE ; make
+      - name: run
+        shell: openbsd {0}
+        run: $GITHUB_WORKSPACE/arm64id
