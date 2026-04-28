@@ -398,6 +398,9 @@ main(int argc, char *argv[])
 
 	if (sigaction(SIGILL, &act, NULL) != 0)
 		err(1, "sigaction failed");
+	/* Reading SME registers may raise SIGBUS on FreeBSD 14 */
+	if (sigaction(SIGBUS, &act, NULL) != 0)
+		err(1, "sigaction failed");
 
 	LS_SET_FOREACH(sr, special_reg) {
 		const char *name;
