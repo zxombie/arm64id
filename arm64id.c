@@ -102,6 +102,8 @@ SPECIAL_REGISTER_GROUP(0, 0, 6);
 SPECIAL_REGISTER_GROUP(0, 0, 7);
 
 SPECIAL_REGISTER_GROUP(3, 0, 0);
+SPECIAL_REGISTER_GROUP(3, 2, 4);
+SPECIAL_REGISTER_GROUP(3, 4, 2);
 SPECIAL_REGISTER_GROUP(3, 14, 0);
 SPECIAL_REGISTER_GROUP(3, 14, 2);
 SPECIAL_REGISTER_GROUP(3, 14, 3);
@@ -165,6 +167,16 @@ static struct special_register_alias {
 
 	{ "S3_3_C0_C0_1", "ctr_el0" },
 	{ "S3_3_C0_C0_7", "dczid_el0" },
+
+	{ "S3_3_C2_C4_0", "rndr" },
+	{ "S3_3_C2_C4_1", "rndrrs" },
+
+	{ "S3_3_C4_C2_0", "nzcv" },
+	{ "S3_3_C4_C2_1", "daif" },
+	{ "S3_3_C4_C2_2", "svcr" },
+	{ "S3_3_C4_C2_5", "dit" },
+	{ "S3_3_C4_C2_6", "ssbs" },
+	{ "S3_3_C4_C2_7", "tco" },
 
 	{ "S3_3_C14_C0_0", "cntfrq_el0" },
 	{ "S3_3_C14_C0_1", "cntpct_el0" },
