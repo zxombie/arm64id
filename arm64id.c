@@ -58,7 +58,12 @@ struct special_reg {
 
 LS_SET_DECLARE(special_reg, struct special_reg);
 
+#if defined(_WIN32)
+static jmp_buf jmpbuf;
+#define	sigsetjmp(jb, x)	setjmp(jb)
+#else
 static sigjmp_buf jmpbuf;
+#endif
 
 #define SPECIAL_REGISTER(name)					\
 static int							\
