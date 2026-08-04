@@ -413,9 +413,11 @@ main(int argc, char *argv[])
 
 	if (signal(SIGILL, sigill) == SIG_ERR)
 		err(1, "signal SIGILL failed");
+#ifdef SIGBUS
 	/* Reading SME registers may raise SIGBUS on FreeBSD 14 */
 	if (signal(SIGBUS, sigill) == SIG_ERR)
 		err(1, "signal SIGBUS failed");
+#endif
 
 	LS_SET_FOREACH(sr, special_reg) {
 		const char *name;
