@@ -8,10 +8,7 @@ jobs:
     runs-on: windows-11-arm
     steps:
       - uses: actions/checkout@v6
-      - name: install packages
-        run: |
-          choco install bmake || true
       - name: make
-        run: bmake
+        run: cc -O2 arm64id.c -o arm64id.exe
       - name: run
         run: ./arm64id.exe
