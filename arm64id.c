@@ -203,11 +203,8 @@ static struct special_register_alias {
 };
 
 static void
-sigill(int signo, siginfo_t *info, void *ctx)
+sigill(int signo)
 {
-	(void)info;
-	(void)ctx;
-
 	siglongjmp(jmpbuf, 1);
 }
 
@@ -410,20 +407,14 @@ print_hwcaps(void)
 int
 main(int argc, char *argv[])
 {
-	struct sigaction act;
 	struct special_reg **sr, *cursr;
 	uint64_t reg;
 
-	memset(&act, 0, sizeof(act));
-	sigemptyset(&act.sa_mask);
-	act.sa_sigaction = sigill;
-	act.sa_flags = SA_SIGINFO;
-
-	if (sigaction(SIGILL, &act, NULL) != 0)
-		err(1, "sigaction failed");
+	if (signal(SIGILL, sigill) == SIG_ERR)
+		err(1, "signal SIGILL failed");
 	/* Reading SME registers may raise SIGBUS on FreeBSD 14 */
-	if (sigaction(SIGBUS, &act, NULL) != 0)
-		err(1, "sigaction failed");
+	if (signal(SIGBUS, sigill) == SIG_ERR)
+		err(1, "signal SIGBUS failed");
 
 	LS_SET_FOREACH(sr, special_reg) {
 		const char *name;
