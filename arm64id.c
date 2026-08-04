@@ -65,6 +65,7 @@ LS_SET_DECLARE(special_reg, struct special_reg);
 #if defined(_WIN32)
 static jmp_buf jmpbuf;
 #define	sigsetjmp(jb, x)	setjmp(jb)
+#define	siglongjmp(jb, x)	longjmp(jb, x)
 #else
 static sigjmp_buf jmpbuf;
 #endif
