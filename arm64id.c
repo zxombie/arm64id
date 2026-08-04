@@ -49,6 +49,10 @@
 #include "hwcaps.h"
 #include "linker_set.h"
 
+#ifndef __STRING
+#define	__STRING(x)	#x
+#endif
+
 typedef int (*special_reg_read)(uint64_t *);
 
 struct special_reg {
