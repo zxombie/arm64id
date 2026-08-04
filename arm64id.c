@@ -32,7 +32,7 @@
 
 #include <sys/cdefs.h>
 #include <sys/param.h>
-#if !defined(__APPLE__) && !defined(__NetBSD__)
+#if !defined(__APPLE__) && !defined(__NetBSD__) && !defined(_WIN32)
 #include <sys/auxv.h>
 #endif
 
@@ -207,7 +207,7 @@ sigill(int signo, siginfo_t *info, void *ctx)
 #endif
 
 /* No HWCAP support on Mac or NetBSD (at least not in 2026) */
-#if !defined(__APPLE__) && !defined(__NetBSD__)
+#if !defined(__APPLE__) && !defined(__NetBSD__) && !defined(_WIN32)
 
 struct hwcaps {
 	const char *name;
@@ -396,7 +396,7 @@ print_hwcaps(void)
 	print_hwcap(AT_HWCAP4, "HWCAP4", hwcaps4, nitems(hwcaps));
 #endif
 }
-#endif /* !__APPLE__ && !__NetBSD__ */
+#endif /* !__APPLE__ && !__NetBSD__ && !_WIN32 */
 
 int
 main(int argc, char *argv[])
@@ -437,7 +437,7 @@ main(int argc, char *argv[])
 			printf("0x%"PRIx64"\n", reg);
 	}
 
-#if !defined(__APPLE__) && !defined(__NetBSD__)
+#if !defined(__APPLE__) && !defined(__NetBSD__) && !defined(_WIN32)
 	print_hwcaps();
 #endif
 
