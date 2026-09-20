@@ -46,7 +46,9 @@
 #include <stdbool.h>
 #include <stdint.h>
 #include <stdio.h>
+#if !defined(_WIN32)
 #include <unistd.h>
+#endif
 
 #include "hwcaps.h"
 #include "linker_set.h"
