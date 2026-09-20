@@ -30,7 +30,10 @@
  * SUCH DAMAGE.
  */
 
+
+#if !defined(_WIN32)
 #include <sys/param.h>
+#endif
 #if !defined(__APPLE__) && !defined(__NetBSD__) && !defined(_WIN32)
 #include <sys/auxv.h>
 #endif
