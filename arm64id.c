@@ -69,10 +69,10 @@ get_##name(uint64_t *res)					\
 								\
 	ret = sigsetjmp(jmpbuf, 1);				\
 	if (ret == 0) {						\
-		asm(						\
+		asm volatile(					\
 		"	mrs	%0, "__STRING(name)"	\n"	\
-		"	str	%0, [%1]		\n"	\
-		: "+r"(tmp): "r"(res): "memory");		\
+		: "=&r"(tmp) :: );				\
+		*res = tmp;					\
 	}							\
 	return (ret);						\
 }								\
