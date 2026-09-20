@@ -16,4 +16,4 @@ jobs:
       - name: make
         run: clang --version && clang -O2 arm64id.c err_windows/err.c -I err_windows -o arm64id.exe
       - name: run
-        run: .\arm64id.exe
+        run: gdb --batch --command=run.gdb ./arm64id.exe
